@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEDVANCE SMART+ Bulb Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #222;
+            color: #ccc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 1rem;
+        }
+
+        .bulb-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .bulb {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #666;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .bulb.on {
+            background: #fff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            color: #000;
+        }
+
+        .bulb::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 20px;
+            background: #555;
+            border-radius: 5px 5px 0 0;
+        }
+
+        /* Brightness Control */
+        .brightness-control {
+            background: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .brightness-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #ccc;
+            font-weight: 600;
+        }
+
+        .brightness-percent {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .brightness-slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: #666;
+            border-radius: 5px;
+            outline: none;
+            margin: 10px 0;
+        }
+
+        .brightness-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4cc9f0;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+        }
+
+        /* Power Control Buttons */
+        .power-control {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .power-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #powerOnBtn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        #powerOffBtn {
+            background: #f44336;
+            color: white;
+        }
+
+        .power-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Status Display */
+        .status-display {
+            background: #444;
+            border: 1px solid #666;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .status-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .current-settings {
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .setting-item {
+            text-align: center;
+        }
+
+        .setting-value {
+            font-weight: 700;
+            color: #fff;
+            margin-top: 5px;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .bulb-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .bulb {
+                font-size: 30px;
+            }
+
+            .power-control {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💡 LEDVANCE SMART+ Bulb</h1>
+            <p class="subtitle">Brightness Control</p>
+        </header>
+
+        <div class="bulb-container">
+            <div class="bulb" id="bulb">💡</div>
+        </div>
+
+        <!-- Brightness Control -->
+        <div class="brightness-control">
+            <div class="brightness-value">
+                <span>BRIGHTNESS</span>
+                <span class="brightness-percent" id="brightnessValue">50%</span>
+            </div>
+            <input type="range" 
+                   class="brightness-slider" 
+                   id="brightnessSlider"
+                   min="1" 
+                   max="100" 
+                   value="50">
+        </div>
+
+        <!-- Power Control -->
+        <div class="power-control">
+            <button class="power-btn" id="powerOnBtn">
+                <span class="btn-icon">⚡</span>
+                <span>TURN ON</span>
+            </button>
+            <button class="power-btn" id="powerOffBtn">
+                <span class="btn-icon">⏻</span>
+                <span>TURN OFF</span>
+            </button>
+        </div>
+
+        <!-- Status Display -->
+        <div class="status-display" id="statusDisplay">
+            <div class="status-text" id="statusText">Bulb is READY</div>
+            <div class="current-settings">
+                <div class="setting-item">
+                    <div>Power</div>
+                    <div class="setting-value" id="currentPower">OFF</div>
+                </div>
+                <div class="setting-item">
+                    <div>Brightness</div>
+                    <div class="setting-value" id="currentBrightness">50%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bulb-control.js"></script>
+</body>
+</html>
