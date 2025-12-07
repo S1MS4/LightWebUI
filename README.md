@@ -7,7 +7,7 @@
 ![TinyTuya](https://img.shields.io/badge/tinytuya-1.11.1-orange)
 ![Responsive](https://img.shields.io/badge/responsive-✓-brightgreen)
 
-A modern web-based control interface for smart light bulbs using Flask and TinyTuya.
+A simple web-based control interface for smart light bulbs using Flask and TinyTuya.
 
 ## Overview
 
