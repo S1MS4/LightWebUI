@@ -13,63 +13,49 @@ A modern web-based control interface for smart light bulbs using Flask and TinyT
 
 LightWebUI provides a sleek, responsive web interface to control Tuya-compatible smart bulbs over your local network. The interface features real-time status updates, smooth animations, and intuitive controls for power, brightness, and color temperature.
 
-## Features
+## Critical Setup Instructions
 
-- **Modern Glassmorphism UI**: Clean, dark-themed interface with glass-like cards and smooth animations
-- **Real-time Controls**: Instant control over bulb power, brightness (10-1000), and color temperature (2700K-6700K)
-- **Connection Management**: Automatic and manual reconnection with visual status indicators
-- **Quick Presets**: One-touch presets for different lighting scenarios (Relax, Work, Focus)
-- **Responsive Design**: Fully responsive layout that works on desktop and mobile devices
-- **Background Sync**: Dynamic background that changes with color temperature settings
+Before using this application:
 
-## Project Structure
+1. **Ensure your computer and smart bulb are on the same Wi-Fi network.**
+2. **Find your bulb’s current IP address** by running:
+   ```bash
+   python find_bulb.py
+   ```
+3. **Update the `BULB_CONFIG` block in `app.py`** with your actual:
+   - `device_id`
+   - `ip_address` (from step 2)
+   - `local_key`
+   - `version` (typically `"3.3"`)
 
-```
-LightWebUI/
-├── app.py                 # Flask backend server
-├── templates/
-│   └── index.html        # Main HTML interface
-├── static/
-│   ├── style.css         # CSS styles with animations
-│   └── script.js         # Frontend JavaScript controller
-├── requirements.txt       # Python dependencies
-└── README.md             # This file
-```
+> **Important**: The bulb is initialized **once at startup only**, exactly as shown in `app.py`. Do **not** re-initialize the bulb inside route handlers or on every request—this will break the persistent connection and cause timeouts.
 
 ## Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/S1MS4/LightWebUI.git
-cd LightWebUI
-```
+   ```bash
+   git clone https://github.com/S1MS4/LightWebUI.git
+   cd LightWebUI
+   ```
 
 2. Install Python dependencies:
-```
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3. Configure your bulb settings in `app.py`:
-```python
-BULB_CONFIG = {
-    "device_id": "your_device_id",
-    "ip_address": "your_bulb_ip",
-    "local_key": "your_local_key",
-    "version": "3.3"
-}
-```
+3. Configure your bulb settings in `app.py` as described above.
 
 ## Usage
 
 1. Start the Flask server:
-```
-python app.py
-```
+   ```bash
+   python app.py
+   ```
 
 2. Open your browser and navigate to:
-```
-http://localhost:5000
-```
+   ```
+   http://localhost:5000
+   ```
 
 3. The interface will automatically attempt to connect to your smart bulb. Use the controls to:
    - Toggle power on/off
@@ -82,19 +68,19 @@ http://localhost:5000
 - Flask 2.3.3
 - Flask-CORS 4.0.0
 - TinyTuya 1.11.1
-- Font Awesome 6.4.0 (CDN)
+- Font Awesome 6.4.0 (loaded via CDN)
 
 ## API Endpoints
 
-- `GET /` - Main web interface
-- `GET /status` - Connection status check
-- `GET /get-state` - Retrieve current bulb state
-- `POST /power` - Toggle power on/off
-- `POST /brightness` - Set brightness level
-- `POST /temperature` - Set color temperature
-- `GET /connection` - Connection information
-- `POST /restart` - Manual reconnection
-- `GET /debug` - Debug information
+- `GET /` – Main web interface  
+- `GET /status` – Connection status check  
+- `GET /get-state` – Retrieve current bulb state  
+- `POST /power` – Toggle power on/off  
+- `POST /brightness` – Set brightness level  
+- `POST /temperature` – Set color temperature  
+- `GET /connection` – Connection information  
+- `POST /restart` – Manual reconnection  
+- `GET /debug` – Debug information  
 
 ## Browser Support
 
@@ -105,14 +91,14 @@ http://localhost:5000
 
 ## License
 
-This project is open source and available for personal and educational use.
+This project is open source and available under the MIT license for personal and educational use.
 
 ## Troubleshooting
 
-1. **Connection Issues**: Ensure your bulb is powered on and connected to the same network
-2. **No Response**: Verify the IP address and local key in `app.py`
-3. **Control Not Working**: Check if the bulb supports the Tuya protocol version 3.3
-4. **Interface Not Loading**: Ensure all dependencies are installed and Flask server is running
+1. **Connection Issues**: Ensure your bulb is powered on and connected to the same network as your computer.
+2. **No Response**: Double-check the IP address (use `find_bulb.py`) and verify the `local_key` in `app.py`.
+3. **Control Not Working**: Confirm your bulb uses Tuya protocol version 3.3.
+4. **Interface Not Loading**: Make sure all dependencies are installed and the Flask server is running without errors.
 
 ## Contributing
 
