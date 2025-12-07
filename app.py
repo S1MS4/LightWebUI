@@ -21,12 +21,8 @@ BULB_CONFIG = {
 bulb = None
 connection_established = False
 
-print("=" * 50)
-print("🔧 Initializing Smart Bulb Controller")
-print("=" * 50)
-
 try:
-    print(f"📡 Connecting to bulb at {BULB_CONFIG['ip_address']}...")
+    print(f"Connecting to bulb at {BULB_CONFIG['ip_address']}...")
     
     bulb = tinytuya.BulbDevice(
         dev_id=BULB_CONFIG["device_id"],
@@ -41,13 +37,13 @@ try:
     bulb.set_socketPersistent(True)  # Keep connection alive
     
     # Test connection
-    print("⚡ Testing connection...")
+    print("Testing connection...")
     test_result = bulb.status()
     
     if test_result and 'dps' in test_result:
         connection_established = True
-        print("✅ SUCCESS: Bulb connected and responding!")
-        print(f"📊 Available DPS keys: {list(test_result['dps'].keys())}")
+        print("Bulb connected and responding!")
+        print(f"Available DPS keys: {list(test_result['dps'].keys())}")
         
         # Show initial status
         dps = test_result['dps']
@@ -55,20 +51,12 @@ try:
             if key in dps:
                 print(f"   DPS {key}: {dps[key]}")
     else:
-        print("⚠️  WARNING: Bulb responded but no DPS data")
         print("   The bulb may be offline or incompatible")
         
 except Exception as e:
-    print(f"❌ FAILED: Could not connect to bulb")
-    print(f"   Error: {e}")
-    print("\n💡 TROUBLESHOOTING:")
-    print("   1. Check if bulb is powered on")
-    print("   2. Verify IP address is correct")
-    print("   3. Check local_key is correct")
-    print("   4. Ensure bulb is on the same network")
+    print(f"FAILED: Could not connect to bulb")
+    print(f"Error: {e}")
     bulb = None
-
-print("=" * 50)
 
 # Temperature conversion
 MIN_KELVIN = 2700
@@ -98,20 +86,20 @@ def get_bulb_state():
         }), 503
     
     try:
-        print("🔄 Attempting to get bulb state...")
+        print("Attempting to get bulb state...")
         
         # Get status with timeout
         status = bulb.status()
         
         if not status or 'dps' not in status:
-            print("⚠️ No DPS data in response")
+            print("No DPS data in response")
             return jsonify({
                 "success": False,
                 "error": "No status data"
             }), 503
         
         dps = status['dps']
-        print(f"📊 Received DPS: {dps}")
+        print(f"Received DPS: {dps}")
         
         # Extract values with defaults
         power = dps.get('20', True)
@@ -134,7 +122,7 @@ def get_bulb_state():
         except:
             temperature = 4700
         
-        print(f"✅ Parsed state - Power: {power}, Brightness: {brightness}, Temp: {temperature}K")
+        print(f"Parsed state - Power: {power}, Brightness: {brightness}, Temp: {temperature}K")
         
         return jsonify({
             "success": True,
@@ -146,7 +134,7 @@ def get_bulb_state():
         })
         
     except Exception as e:
-        print(f"❌ Error in get_bulb_state: {e}")
+        print(f"Error in get_bulb_state: {e}")
         return jsonify({
             "success": False,
             "error": str(e)
@@ -200,14 +188,14 @@ def toggle_power():
             bulb.turn_off()
             action = "OFF"
         
-        print(f"💡 Bulb turned {action}")
+        print(f"Bulb turned {action}")
         return jsonify({
             "success": True,
             "state": state
         })
         
     except Exception as e:
-        print(f"❌ Error toggling power: {e}")
+        print(f"Error toggling power: {e}")
         return jsonify({
             "success": False,
             "error": str(e)
@@ -227,7 +215,7 @@ def set_brightness():
         brightness = max(10, min(1000, brightness))
         
         bulb.set_brightness(brightness)
-        print(f"🔆 Brightness set to {brightness}")
+        print(f"Brightness set to {brightness}")
         
         return jsonify({
             "success": True,
@@ -235,7 +223,7 @@ def set_brightness():
         })
         
     except Exception as e:
-        print(f"❌ Error setting brightness: {e}")
+        print(f"Error setting brightness: {e}")
         return jsonify({
             "success": False,
             "error": str(e)
@@ -258,7 +246,7 @@ def set_temperature():
         # Try set_colourtemp first (most reliable)
         bulb.set_colourtemp(tuya_value)
         
-        print(f"🎨 Temperature: {kelvin}K (Tuya: {tuya_value})")
+        print(f"Temperature: {kelvin}K (Tuya: {tuya_value})")
         
         return jsonify({
             "success": True,
@@ -267,7 +255,7 @@ def set_temperature():
         })
         
     except Exception as e:
-        print(f"❌ Error setting temperature: {e}")
+        print(f"Error setting temperature: {e}")
         return jsonify({
             "success": False,
             "error": str(e)
@@ -287,7 +275,7 @@ def restart_connection():
     """Manually restart connection (admin only)"""
     global bulb, connection_established
     
-    print("🔄 Manual reconnection requested...")
+    print("Manual reconnection requested...")
     
     try:
         # Close old connection
@@ -306,7 +294,7 @@ def restart_connection():
         
         if test:
             connection_established = True
-            print("✅ Reconnected successfully!")
+            print("Reconnected successfully!")
             return jsonify({"success": True, "message": "Reconnected"})
         else:
             connection_established = False
@@ -314,7 +302,7 @@ def restart_connection():
             
     except Exception as e:
         connection_established = False
-        print(f"❌ Reconnection failed: {e}")
+        print(f" Reconnection failed: {e}")
         return jsonify({"success": False, "message": str(e)})
 
 @app.route('/debug')
@@ -339,11 +327,11 @@ def serve_static(path):
     return send_from_directory('static', path)
 
 if __name__ == '__main__':
-    print("\n🌐 Starting Flask server...")
+    print("\n Starting Flask server...")
     print(f"   Web interface: http://localhost:5000")
     print(f"   Debug info:    http://localhost:5000/debug")
     print(f"   Connection:    http://localhost:5000/connection")
-    print("\n📱 Ready to control your smart bulb!")
+    print("\n Ready to control your smart bulb!")
     print("=" * 50)
     
     app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)  # use_reloader=False prevents double initialization

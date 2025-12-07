@@ -605,6 +605,89 @@ class BulbController {
     }
 }
 
+// Add this function to update battery status
+async function updateBatteryStatus() {
+    try {
+        if ('getBattery' in navigator) {
+            const battery = await navigator.getBattery();
+            
+            // Update battery display
+            updateBatteryDisplay(battery);
+            
+            // Listen for changes
+            battery.addEventListener('levelchange', () => updateBatteryDisplay(battery));
+            battery.addEventListener('chargingchange', () => updateBatteryDisplay(battery));
+        } else {
+            // Fallback for browsers that don't support Battery API
+            setMockBattery();
+        }
+    } catch (error) {
+        console.log('Battery API error:', error);
+        setMockBattery();
+    }
+}
+
+function updateBatteryDisplay(battery) {
+    const batteryIcon = document.getElementById('batteryIcon');
+    if (!batteryIcon) return;
+    
+    const level = battery.level; // 0 to 1
+    const isCharging = battery.charging;
+    
+    // Remove all existing classes
+    batteryIcon.className = 'fas';
+    
+    // Choose the right icon based on battery level and charging status
+    if (isCharging) {
+        batteryIcon.classList.add('fa-bolt');
+    } else if (level >= 0.9) {
+        batteryIcon.classList.add('fa-battery-full');
+    } else if (level >= 0.7) {
+        batteryIcon.classList.add('fa-battery-three-quarters');
+    } else if (level >= 0.4) {
+        batteryIcon.classList.add('fa-battery-half');
+    } else if (level >= 0.2) {
+        batteryIcon.classList.add('fa-battery-quarter');
+    } else {
+        batteryIcon.classList.add('fa-battery-empty');
+    }
+    
+    // Optional: Add color classes for low battery
+    if (!isCharging && level < 0.2) {
+        batteryIcon.style.color = '#ff4757'; // Red for low battery
+    } else if (!isCharging && level < 0.4) {
+        batteryIcon.style.color = '#ffa502'; // Orange for medium-low
+    } else {
+        batteryIcon.style.color = ''; // Reset to default
+    }
+}
+
+// Fallback function for browsers without Battery API
+function setMockBattery() {
+    const batteryIcon = document.getElementById('batteryIcon');
+    if (!batteryIcon) return;
+    
+    // Show a full battery icon (or you could randomize it)
+    batteryIcon.className = 'fas fa-battery-full';
+}
+
+// Function to update WiFi/signal strength (mock for now)
+function updateNetworkIcons() {
+    const wifiIcon = document.getElementById('wifiIcon');
+    const signalIcon = document.getElementById('signalIcon');
+    
+    if (wifiIcon && navigator.onLine) {
+        // Randomly change WiFi signal for visual effect
+        const wifiLevels = ['fa-wifi', 'fa-wifi', 'fa-wifi'];
+        wifiIcon.className = `fas ${wifiLevels[Math.floor(Math.random() * wifiLevels.length)]}`;
+    }
+    
+    if (signalIcon) {
+        // Randomly change signal strength for visual effect
+        const signalLevels = ['fa-signal', 'fa-signal', 'fa-signal'];
+        signalIcon.className = `fas ${signalLevels[Math.floor(Math.random() * signalLevels.length)]}`;
+    }
+}
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
     window.controller = new BulbController();
@@ -624,4 +707,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     updateTime();
     setInterval(updateTime, 60000);
+    
+    // Update battery status
+    updateBatteryStatus();
+    
+    // Update network icons (optional, can be removed)
+    updateNetworkIcons();
+    // setInterval(updateNetworkIcons, 10000); // Update every 10 seconds if you want animation
 });
